@@ -1,0 +1,12 @@
+[package]
+name = "easy_cron"
+version = "0.1.0"
+authors = ["stealthanthrax <sansyrox@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+job_scheduler = "*"
+clap = "3.0.0-beta.2"
+daemonize = "0.4.1"
