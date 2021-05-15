@@ -137,6 +137,7 @@ dependencies = [
  "clap",
  "daemonize",
  "job_scheduler",
+ "os_pipe",
 ]
 
 [[package]]
@@ -271,6 +272,16 @@ name = "object"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9a7ab5d64814df0fe4a4b5ead45ed6c5f181ee3ff04ba344313a6c80446c5d4"
+
+[[package]]
+name = "os_pipe"
+version = "0.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb233f06c2307e1f5ce2ecad9f8121cffbbee2c95428f44ea85222e460d0d213"
+dependencies = [
+ "libc",
+ "winapi",
+]
 
 [[package]]
 name = "os_str_bytes"

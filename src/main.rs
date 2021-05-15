@@ -1,31 +1,11 @@
 extern crate daemonize;
 
 use clap::{App, Arg};
-use std::process::Command;
-
-fn process_cron(second: &str, hour: &str, day: &str, month: &str, year: &str) {
-    let crontab = Command::new("crontab")
-        .arg("-l")
-        .output()
-        .expect("failed to execute child");
-
-    println!("{}", String::from_utf8_lossy(&crontab.stderr));
-    println!("{}", String::from_utf8_lossy(&crontab.stdout));
-
-    let crontab_command = format!("{} {} {} {} {}", second, hour, day, month, year);
-    let child = Command::new("echo")
-        .arg("* 1 * * * test")
-        .output()
-        .expect("failed to execute child");
-
-    let output = child.stdout;
-
-    println!("{}", String::from_utf8_lossy(&output))
-}
+use easy_cron::{current_jobs, delete_all_jobs, process_cron};
 
 fn main() {
     let matches = App::new("Easy Cron")
-        .version("0.1.0")
+        .version("0.1.1")
         .author("Sanskar Jethi <sansyrox@gmail.com>")
         .about("Easily schedule your task")
         .arg(
@@ -34,13 +14,6 @@ fn main() {
                 .long("second")
                 .takes_value(true)
                 .about("Execute the script every nth second"),
-        )
-        .arg(
-            Arg::new("minute")
-                .short('m')
-                .long("minute")
-                .takes_value(true)
-                .about("Execute the script every nth minute"),
         )
         .arg(
             Arg::new("hour")
@@ -70,9 +43,29 @@ fn main() {
                 .about("Execute the script every nth year"),
         )
         .arg(
+            Arg::new("command")
+                .short('c')
+                .long("command")
+                .takes_value(true)
+                .about("The command to be executed"),
+        )
+        .arg(
+            Arg::new("executable")
+                .short('x')
+                .long("executable")
+                .takes_value(true)
+                .about("The path to the executable"),
+        )
+        .arg(
             Arg::new("jobs")
                 .short('j')
                 .long("jobs")
+                .takes_value(false)
+                .about("Shows all the current jobs"),
+        )
+        .arg(
+            Arg::new("delete_all_jobs")
+                .long("delete_all_jobs")
                 .takes_value(false)
                 .about("Shows all the current jobs"),
         )
@@ -80,10 +73,19 @@ fn main() {
 
     let second = matches.value_of("second").unwrap_or("*");
     let hour = matches.value_of("hour").unwrap_or("*");
-    let minute = matches.value_of("minute").unwrap_or("*");
     let day = matches.value_of("day").unwrap_or("*");
     let month = matches.value_of("month").unwrap_or("*");
     let year = matches.value_of("year").unwrap_or("*");
+    let command = matches.value_of("command").unwrap_or("");
 
-    process_cron()
+    if matches.is_present("jobs") {
+        println!("{}", current_jobs());
+        return;
+    } else if matches.is_present("delete_all_jobs") {
+        delete_all_jobs();
+        println!("{}", current_jobs());
+        return;
+    }
+
+    process_cron(&second, &hour, &day, &month, &year, &command)
 }
